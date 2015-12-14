@@ -1,0 +1,33 @@
+{
+  "name": "hapi-react",
+  "version": "1.0.0",
+  "description": "Hapi universal ES6 react with stylus and material ui",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack --config webpack.config.js && node ."
+  },
+  "author": "Mattias Ewers",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.1.18",
+    "good": "^6.4.0",
+    "good-console": "^5.2.0",
+    "good-file": "^5.1.1",
+    "good-http": "^5.1.0",
+    "postcss-loader": "^0.8.0",
+    "poststylus": "^0.2.2",
+    "rucksack-css": "^0.8.5",
+    "stylus-loader": "^1.4.2"
+  },
+  "dependencies": {
+    "axios": "^0.7.0",
+    "babel-preset-stage-2": "^6.3.13",
+    "babel-preset-stage-3": "^6.3.13",
+    "material-ui": "^0.14.0-rc1",
+    "normalize-styl": "^3.0.3",
+    "react-doc-meta": "^0.2.0",
+    "react-document-meta": "^2.0.0-rc2",
+    "react-redux": "^4.0.0",
+    "react-tap-event-plugin": "^0.2.1"
+  }
+}
