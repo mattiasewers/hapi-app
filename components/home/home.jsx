@@ -17,7 +17,8 @@ class Component extends React.Component {
     super(props);
     this.state = {
       muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
-      data: []
+      data: [],
+      isLoading: true
     }
   }
 
@@ -45,7 +46,8 @@ class Component extends React.Component {
       .then( (res) => {
         console.log(res.data);
         this.setState({
-          data: res.data
+          data: res.data,
+          isLoading: false
         });
       })
       .catch( (response) => {
@@ -98,11 +100,19 @@ class Component extends React.Component {
 
   renderList(){
     let data = this.state.data;
-    if(data.length !== 0){
-      let list = data.map( (i) => <div style={{width: '100%'}} key={i._id}> <li style={{display: 'inline-block', padding: '1em'}} key={i._id}>{i.name}</li> <FlatButton label="remove" secondary={true} onTouchTap={this.handleRemove.bind(this, i._id)}/> </div>);
-       return list;
-    } else {
-      return <CircularProgress mode="indeterminate" />
+    let isLoading = this.state.isLoading;
+    if(!isLoading && data.length !== 0){
+      let list = data.map( (i) =>
+        <div style={{width: '100%'}} key={i._id}>
+          <li style={{display: 'inline-block', padding: '1em'}} key={i._id}>{i.name}</li>
+          <FlatButton label="remove" secondary={true} onTouchTap={this.handleRemove.bind(this, i._id)}/>
+        </div>
+      );
+      return list;
+    } else if(data.length === 0 && !isLoading) {
+      return <p>add todos...</p>;
+    } else{
+      return <CircularProgress mode="indeterminate" />;
     }
   }
 
