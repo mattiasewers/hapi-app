@@ -2,7 +2,6 @@ import React from 'react';
 import DocMeta from 'react-doc-meta';
 
 
-
 export default class Component extends React.Component{
   render() {
 

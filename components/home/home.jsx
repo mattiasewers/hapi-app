@@ -1,24 +1,23 @@
 import React from 'react';
-import axios from 'axios';
-//MUI
 import {FlatButton, TextField, CircularProgress} from 'material-ui';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import LightRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme';
 import Colors from 'material-ui/lib/styles/colors';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import Relay from 'react-relay';
+
+import Test from './test'
 
 injectTapEventPlugin();
 
 import '../../styles/home.styl';
 
-class Component extends React.Component {
+export default class HomeComponent extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
-      muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
-      data: [],
-      isLoading: true
+      muiTheme: ThemeManager.getMuiTheme(LightRawTheme)
     }
   }
 
@@ -41,79 +40,6 @@ class Component extends React.Component {
     });
 
     this.setState({muiTheme: newMuiTheme});
-
-    axios.get('/todos')
-      .then( (res) => {
-        console.log(res.data);
-        this.setState({
-          data: res.data,
-          isLoading: false
-        });
-      })
-      .catch( (response) => {
-        console.log(response);
-      });
-  }
-
-  handleClick(e){
-    e.preventDefault();
-    axios.post('/todos', {
-        name: this.refs.text.getValue()
-      })
-      .then( (res) => {
-        console.log(res.data);
-        this.setState({
-          data: [
-            {
-              name: res.data.name,
-              _id: res.data._id
-            },
-            ...this.state.data,
-          ]
-        });
-        this.refs.text.clearValue();
-      })
-      .catch( (res) => {
-      console.log(res);
-      });
-  }
-
-  handleRemove(id){
-    console.log(id);
-    axios.delete(`/todos/${id}`)
-      .then( (res) => {
-        let indexof;
-    		this.state.data.map((obj, index) => {
-    			if(obj._id === res.data._id){
-    				indexof = index;
-    			}
-    		});
-        this.setState(state => {
-            state.data.splice(indexof, 1);
-            return {data: state.data};
-        });
-      })
-      .catch( (res) => {
-
-      });
-  }
-
-  renderList(){
-    let data = this.state.data;
-    let isLoading = this.state.isLoading;
-    if(!isLoading && data.length !== 0){
-      let list = data.map( (i) =>
-        <div style={{width: '100%'}} key={i._id}>
-          <li style={{display: 'inline-block', padding: '1em'}} key={i._id}>{i.name}</li>
-          <FlatButton label="remove" secondary={true} onTouchTap={this.handleRemove.bind(this, i._id)}/>
-        </div>
-      );
-      return list;
-    } else if(data.length === 0 && !isLoading) {
-      return <p>add todos...</p>;
-    } else{
-      return <CircularProgress mode="indeterminate" />;
-    }
   }
 
   render() {
@@ -122,20 +48,18 @@ class Component extends React.Component {
       return (
           <section className="todo">
             <h2>Add todo</h2>
-            <form method="post" onSubmit={this.handleClick.bind(this)}>
+            <form method="post">
               <TextField
                 hintText="Add todo" ref="text"
                 underlineFocusStyle={{borderColor: Colors.indigo500}} />
-              <FlatButton label="add" primary={true} onTouchTap={this.handleClick.bind(this)} />
+              <FlatButton label="add" primary={true} />
             </form>
-              {this.renderList()}
+              <li>test</li>
           </section>
       );
   }
 };
 
-Component.childContextTypes = {
+HomeComponent.childContextTypes = {
   muiTheme: React.PropTypes.object
 };
-
-module.exports = Component;
