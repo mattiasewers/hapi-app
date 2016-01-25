@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppComponent from './home/home.jsx';
+import App from './home/app.jsx';
+import HomeRoute from './routes/HomeRoute.jsx';
+import Relay from 'react-relay';
 
-const App = React.createFactory(AppComponent);
-const mountNode = document.getElementById('app-mount');
-const serverState = window.state;
-
-
-ReactDOM.render(App(serverState), mountNode);
+ReactDOM.render(
+	<App />,
+ 	document.getElementById('root')
+ );

@@ -1,5 +1,5 @@
 'use strict';
 
-var assets = require('./assets');
+const assets = require('./assets');
 
 module.exports = [].concat(assets);

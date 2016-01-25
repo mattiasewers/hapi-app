@@ -1,25 +1,135 @@
-'use strict';
+import Db from '../db';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLList } from 'graphql';
+
+import { nodeDefinitions, fromGlobalId, globalIdField, connectionArgs, connectionDefinitions, connectionFromPromisedArray } from 'graphql-relay';
+
+const Post = new GraphQLObjectType({
+  name: 'Post',
+  description: 'Blog post',
+  fields() {
+    return {
+      title: {
+        type: GraphQLString,
+        resolve(post) {
+          return post.title;
+        }
+      },
+      content: {
+        type: GraphQLString,
+        resolve(post) {
+          return post.content;
+        }
+      },
+      person: {
+        type: personType,
+        resolve(post) {
+          return post.getPerson();
+        }
+      }
+    };
+  }
 });
 
-var _mongoose = require('mongoose');
+const { nodeInterface, nodeField } = nodeDefinitions(globalId => {
+  const { type, id } = fromGlobalId(globalId);
 
-var _mongoose2 = _interopRequireDefault(_mongoose);
+  console.log('type=', type);
+  console.log('id=', id);
 
-var _user = require('./user');
+  if (type === 'Person') {
+    return Db.models.person.findById(id);
+  }
+  return null;
+}, obj => {
+  return personType;
+});
 
-var _user2 = _interopRequireDefault(_user);
+const personType = new GraphQLObjectType({
+  name: 'Person',
+  description: 'This represents a Person',
+  fields: () => {
+    return {
+      id: globalIdField('Person'),
+      firstName: {
+        type: GraphQLString,
+        resolve(person) {
+          return person.firstName;
+        }
+      },
+      lastName: {
+        type: GraphQLString,
+        resolve(person) {
+          return person.lastName;
+        }
+      },
+      email: {
+        type: GraphQLString,
+        resolve(person) {
+          return person.email;
+        }
+      },
+      posts: {
+        type: new GraphQLList(Post),
+        resolve(person) {
+          return person.getPosts();
+        }
+      }
+    };
+  },
+  interfaces: [nodeInterface]
+});
 
-var _pet = require('./pet');
+// Connections
+const { connectionType: PersonConnection } = connectionDefinitions({
+  name: 'Person',
+  nodeType: personType
+});
 
-var _pet2 = _interopRequireDefault(_pet);
+const queryType = new GraphQLObjectType({
+  name: 'Query',
+  description: 'Root query',
+  fields: () => ({
+    node: nodeField,
+    peopleRelay: {
+      type: PersonConnection,
+      description: 'Person connection test',
+      args: connectionArgs,
+      resolve(root, args) {
+        return connectionFromPromisedArray(Db.models.person.findAll(), args);
+      }
+    },
+    person: {
+      type: personType,
+      args: {
+        id: {
+          type: GraphQLInt
+        },
+        email: {
+          type: GraphQLString
+        }
+      },
+      resolve(root, args) {
+        return Db.models.person.findOne({ where: args });
+      }
+    },
+    people: {
+      type: new GraphQLList(personType),
+      args: {
+        id: {
+          type: GraphQLInt
+        },
+        email: {
+          type: GraphQLString
+        }
+      },
+      resolve(root, args) {
+        return Db.models.person.findAll({ where: args });
+      }
+    }
+  })
+});
 
-var _graffitiMongoose = require('@risingstack/graffiti-mongoose');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-_mongoose2.default.connect(process.env.MONGO_URI || 'mongodb://localhost/graphql');
-
-exports.default = (0, _graffitiMongoose.getSchema)([_pet2.default, _user2.default]);
+export default new GraphQLSchema({
+  query: queryType
+});

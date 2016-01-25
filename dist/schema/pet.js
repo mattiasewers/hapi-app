@@ -22,6 +22,6 @@ var PetSchema = new _mongoose2.default.Schema({
   }
 });
 
-var Pet = _mongoose2.default.model('Pet', PetSchema);
+var Pets = _mongoose2.default.model('Pets', PetSchema);
 
-exports.default = Pet;
+exports.default = Pets;

@@ -1,6 +1,6 @@
 'use strict';
 
-var Path = require('path');
+const Path = require('path');
 
 module.exports = [{
     method: 'GET',

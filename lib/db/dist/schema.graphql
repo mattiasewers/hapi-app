@@ -1,0 +1,41 @@
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Person implements Node {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String
+  posts: [Post]
+}
+
+type PersonConnection {
+  pageInfo: PageInfo!
+  edges: [PersonEdge]
+}
+
+type PersonEdge {
+  node: Person
+  cursor: String!
+}
+
+type Post {
+  title: String
+  content: String
+  person: Person
+}
+
+type Query {
+  node(id: ID!): Node
+  peopleRelay(after: String, first: Int, before: String, last: Int): PersonConnection
+  person(id: Int, email: String): Person
+  people(id: Int, email: String): [Person]
+}
